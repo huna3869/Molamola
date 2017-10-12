@@ -37,8 +37,23 @@ int main(int argc, char* argv[])
     // I learned from google examples though :/
     char PORT[6];
     ROOT = getenv("PWD");
+    strcpy(&ROOT[strlen(ROOT)],"/web");
     strcpy(PORT,"12345");
 
+    if (argc > 2)
+    {
+        fprintf(stderr, "#ERROR_INVALID_ARGUMENT");
+        exit(1);
+    }
+    else if (argc == 2)
+    {
+        strcpy(PORT, argv[1]);
+    }
+    else { } // do nothing
+
+
+    /*
+    // I liked my way but requirements want worse way :(
     // parsing command line arguments :: -p <port> -d <path>
     while((c = getopt(argc, argv, "p:d:")) != -1)
     {
@@ -60,6 +75,8 @@ int main(int argc, char* argv[])
                 exit(1);
         }
     }
+
+    */
 
     printf("Molamola : Server started - PORT [%s] / ROOT [%s]\n", PORT, ROOT);
 
@@ -182,6 +199,14 @@ void respond(int n)
         {
             reqline[1] = strtok(NULL, " \t");
             reqline[2] = strtok(NULL, " \t\n");
+            printf("%s %s %s\n",reqline[0],reqline[1],reqline[2]);
+
+            char* reqiter = strtok(NULL, "\t\n");
+            while(reqiter != NULL)
+            {
+                printf("%s\n",reqiter);
+                reqiter = strtok(NULL, "\t\n");
+            }
             if( strncmp(reqline[2], "HTTP/1.0", 8)!=0 && strncmp(reqline[2], "HTTP/1.1", 8)!=0) // If request is not following HTTP protocol correctly
             {
                 write(stat_client[n], "HTTP/1.0 400 Bad Request\n", 25);
